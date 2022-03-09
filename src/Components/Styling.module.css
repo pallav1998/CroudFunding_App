@@ -13,7 +13,8 @@
   top: 66vh;
   left: 52.3vw;
 }
-.button1:hover {
+.button1:hover,
+.donatebutton:hover {
   cursor: pointer;
   background-color: #007977;
 }
@@ -32,4 +33,32 @@
 }
 .formdiv > button {
   margin-top: 10px;
+}
+
+.donatebutton {
+  background-color: #01bfbd;
+  margin: auto;
+  border: 0px;
+  border-radius: 4px;
+  box-shadow: 0 4px 8px rgb(1 191 189 / 30%);
+  color: #fff;
+  font-weight: bold;
+  font-family: inherit;
+  width: 60%;
+  height: 40px;
+}
+
+.donateflex {
+  display: flex;
+  flex-direction: row;
+  margin-top: 20px;
+  gap: 90px;
+}
+
+.donateflex > div {
+  display: flex;
+}
+
+.donateflex > div > span {
+  margin-top: 5px;
 }
