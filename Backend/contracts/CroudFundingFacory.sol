@@ -5,6 +5,7 @@ import "./CroudFunding.sol";
 
 contract CroudFundFactory {
     address[] public addressList;
+    uint256 public FundCount = 0;
 
     event Deployed(address addr, uint256 salt);
 
@@ -21,7 +22,7 @@ contract CroudFundFactory {
         return address(uint160(uint256(hash)));
     }
 
-    function deploy(bytes memory bytecode, uint256 _salt) public payable returns (address) {
+    function deploy(bytes memory bytecode, uint256 _salt) public payable {
         address addr;
 
         assembly {
@@ -39,7 +40,15 @@ contract CroudFundFactory {
         }
         addressList.push(addr);
         emit Deployed(addr, _salt);
-        return addr;
+    }
+
+    function CreateNewFund(uint256 _target, uint256 _deadline, string memory _description, string memory _image) payable public {
+        FundCount += 1;
+        bytes memory byteCode = getBytecode(_target, _deadline,_description,_image);
+        deploy(byteCode, 123);
+        // address fundContractAddress = getAddress(byteCode, 123);
+        // CroudFund croudfund = new croudfund(_target, _deadline, _description, _image);
+        // addressList.push(address(croudfund));
     }
 
     function getPerticularFund(uint256 _index) public view returns (address) {

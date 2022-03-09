@@ -1,10 +1,13 @@
-import { useState } from "react";
-import factoryABI from "../Factory.json";
-import fundABI from "../FundABI.json";
+import { useEffect, useState } from "react";
+import { factoryABI } from "../Factory";
+import { fundABI } from "../FundABI";
 import { ethers } from "ethers";
 import NavBar from "./NavBar";
 import CircularProgress from "@mui/material/CircularProgress";
-import Form from "./Form";
+import AuthenticationSVG from "../login.svg";
+import DashBoard from "../DashBoard1.png";
+import FundDetails from "./FundDetails";
+import FormModal from "./FormModal";
 
 function App() {
   const [Address, setAddress] = useState("");
@@ -28,7 +31,24 @@ function App() {
     setAddress("");
   }
 
-  async function CreateFund() {
+  async function CreateFund(formData) {
+    const { Target, Deadline, Description, Image } = formData;
+    if (window.ethereum) {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      await provider.send("eth_requestAccounts", []);
+      const FactoryData = new ethers.Contract(
+        factoryAddress,
+        factoryABI,
+        provider.getSigner()
+      );
+
+      await FactoryData.CreateNewFund(Target, Deadline, Description, Image)
+        .wait()
+        .then(() => window.location.reload());
+    }
+  }
+
+  async function getAllFund() {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     await provider.send("eth_requestAccounts", []);
     const FactoryData = new ethers.Contract(
@@ -36,7 +56,22 @@ function App() {
       factoryABI,
       provider.getSigner()
     );
+
+    const FundCount = (await FactoryData.FundCount()).toNumber();
+    console.log("FundCount:", FundCount);
   }
+
+  useEffect(() => {
+    // const formData = {
+    //   Target: 1000,
+    //   Deadline: 3600,
+    //   Description: "Partt",
+    //   Image: "jncdjcnjkn",
+    // };
+    // CreateFund(formData);
+
+    getAllFund();
+  }, []);
 
   return (
     <div className="App">
@@ -45,12 +80,39 @@ function App() {
         ConnectWallet={ConnectWallet}
         DisconnectWallet={DisconnectWallet}
       />
-      {isLoading ? (
-        <CircularProgress style={{ marginTop: "18%" }} color="success" />
+      {!Address ? (
+        <>
+          <h1>Welcome to the CroudFunding App</h1>
+          <h3>You Need to Authenticate First to access the App</h3>
+          <img
+            style={{ maxHeight: "65vh" }}
+            src={AuthenticationSVG}
+            alt="SVG"
+          />
+        </>
       ) : (
         <>
-          <h1>Welcome to Croud Funding Dashboard</h1>
-          <Form />
+          {isLoading ? (
+            <div style={{ marginTop: "18%" }}>
+              <CircularProgress color="success" />
+              <strong>Loading....</strong>
+            </div>
+          ) : (
+            <div>
+              <>
+                <img
+                  style={{ width: "98vw", height: "100vh", marginTop: "1%" }}
+                  src={DashBoard}
+                  alt="dashboard"
+                />
+                <FormModal />
+              </>
+
+              <div>
+                <FundDetails />
+              </div>
+            </div>
+          )}
         </>
       )}
     </div>

@@ -1,0 +1,35 @@
+.button1 {
+  position: absolute;
+  background-color: #01bfbd;
+  border: 0px;
+  border-radius: 4px;
+  box-shadow: 0 4px 8px rgb(1 191 189 / 30%);
+  color: #fff;
+  font-weight: bold;
+  font-family: inherit;
+  width: 20vw;
+  height: 10vh;
+  font-size: 20px;
+  top: 66vh;
+  left: 52.3vw;
+}
+.button1:hover {
+  cursor: pointer;
+  background-color: #007977;
+}
+
+.formdiv {
+  display: flex;
+  flex-direction: column;
+}
+
+.formdiv > h2 {
+  margin: 0 0 15px 0;
+  text-align: center;
+}
+.formdiv > div {
+  margin-bottom: 20px;
+}
+.formdiv > button {
+  margin-top: 10px;
+}
