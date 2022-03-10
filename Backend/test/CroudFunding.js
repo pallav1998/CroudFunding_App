@@ -77,59 +77,19 @@ describe("CroudFundingg", function () {
     }
   });
 
-    it("should mutate croudfunding details", async () => {
-      await croudfunding.init(
-        "10001",
-        "title1",
-        "description1",
-        100000,
-        dateinSec("2022-01-01"),
-        dateinSec("2022-02-02"),
-        ["imagelinks"],
-        owner.address
-      );
-      const croudfunding = await croudfunding.getcroudfundingDetails();
-      expect(croudfunding.1000).to.equal("10001");
-      expect(croudfunding.title).to.equal("title1");
-      expect(croudfunding.description).to.equal("description1");
-      expect(croudfunding.goal).to.equal(100000);
-      expect(croudfunding.startDate).to.equal(dateinSec("2022-01-01"));
-      expect(croudfunding.endDate).to.equal(dateinSec("2022-02-02"));
-    });
+  it("Demand Refund is not possible if deadline is not crossed", async () => {
+    try {
+      await croudfunding.refund({ from: attacker });
+    } catch (e) {
+      expect(e.reason === "You are nor Elagible for the refund");
+    }
+  });
 
-  //   it("should not fund if goal is reached", async () => {
-  //     await croudfunding.init(
-  //       "10001",
-  //       "title1",
-  //       "description1",
-  //       100000,
-  //       dateinSec("2022-01-01"),
-  //       dateinSec("2022-05-05"),
-  //       ["imagelinks"],
-  //       owner.address
-  //     );
-  //     await croudfunding.connect(owner).SendEthers({ value: 10000 });
-  //     await expect(
-  //       croudfunding.connect(attacker).SendEthers({ value: 100000 })
-  //     ).to.be.revertedWith("Goal Reached");
-  //   });
+  it("should tranfer funds from croudfunding to owner", async () => {
+    await croudfunding.connect(attacker).SendEthers({ value: 8000 });
+    await croudfunding.connect(addr2).SendEthers({ value: 3000 });
+    await croudfunding.connect(owner).GetDonation();
 
-  //   it("should tranfer funds from croudfunding to owner", async () => {
-  //     await croudfunding.init(
-  //       "10001",
-  //       "title1",
-  //       "description1",
-  //       ethers.utils.parseEther("100"),
-  //       dateinSec("2022-01-01"),
-  //       dateinSec("2022-05-05"),
-  //       ["imagelinks"],
-  //       owner.address
-  //     );
-  //     await croudfunding
-  //       .connect(owner)
-  //       .SendEthers({ value: ethers.utils.parseEther("50") });
-  //     await croudfunding.connect(owner).tranferFromcroudfunding();
-  //     const croudfundingFundAfter = await croudfunding.getMycroudfundingFund();
-  //     expect(croudfundingFundAfter).to.equal(0);
-  //   });
+    expect(await croudfunding.raisedAmount()).to.equal(0);
+  });
 });
