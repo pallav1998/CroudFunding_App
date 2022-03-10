@@ -15,6 +15,7 @@ function App() {
 
   const factoryAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
   const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
+  // window.ethereum.enable();
 
   async function ConnectWallet() {
     if (window.ethereum) {
@@ -49,14 +50,13 @@ function App() {
   }
 
   async function getAllFund() {
-    await provider.send("eth_requestAccounts", []);
-    const FactoryData = new ethers.Contract(
-      factoryAddress,
-      factoryABI,
-      provider.getSigner()
-    );
+    const signer = await provider.getSigner();
+    // await provider.send("eth_requestAccounts", []);
+    const FactoryData = new ethers.Contract(factoryAddress, factoryABI, signer);
+    console.log("FactoryData:", FactoryData);
 
-    const FundCount = (await FactoryData.FundCount()).toNumber();
+    const FundCount = await FactoryData.FundCount({ gasLimit: 21064 });
+    await FundCount.wait();
     console.log("FundCount:", FundCount);
   }
 
